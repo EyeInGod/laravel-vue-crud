@@ -13,11 +13,19 @@
                         />
                     </div>
                     <div class="form-group">
-                        <label>Detail</label>
+                        <label>Description</label>
                         <input
                             type="text"
                             class="form-control"
-                            v-model="product.detail"
+                            v-model="product.description"
+                        />
+                    </div>
+                    <div class="form-group">
+                        <label>Price</label>
+                        <input
+                            type="text"
+                            class="form-control"
+                            v-model="product.price"
                         />
                     </div>
                     <button type="submit" class="btn btn-primary">
