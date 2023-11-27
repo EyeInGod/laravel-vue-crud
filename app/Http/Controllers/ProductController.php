@@ -3,42 +3,92 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Product;
 
 class ProductController extends Controller
 {
     public function index()
     {
-        $products = Product::all()->toArray();
-        return array_reverse($products);
+        return response()->json(Product::all(), 200);
     }
 
+
+    /**
+    * Store a newly created resource in storage.
+    */
     public function store(Request $request)
     {
-        $product = new Product([
-            'name' => $request->input('name'),
-            'detail' => $request->input('detail')
+        $validatedData = $request->validate([
+            'name' => 'required|max:255',
+            'description' => 'required',
+            'price' => 'required|numeric',
         ]);
-        $product->save();
-        return response()->json('Product created!');
+
+        $product = Product::create($validatedData);
+
+        return response()->json($product, 201);
     }
 
-    public function show($id)
+
+    /**
+    * Display the specified resource.
+    */
+    public function show(string $id)
     {
+        // Retrieve the product from the database using the provided $id
         $product = Product::find($id);
-        return response()->json($product);
+
+        // Check if the product was found
+        if ($product) {
+            // Return the product as a JSON response with a 200 HTTP status code
+            return response()->json($product, 200);
+        } else {
+            // Return a 404 Not Found HTTP status code if the product was not found
+            return response()->json(['message' => 'Product not found'], 404);
+        }
     }
 
-    public function update($id, Request $request)
+    /**
+    * Update the specified resource in storage.
+    */
+    public function update(Request $request, Product $product)
     {
-        $product = Product::find($id);
-        $product->update($request->all());
-        return response()->json('Product updated!');
+        // Validate the request data
+        $validatedData = $request->validate([
+            'name' => 'required|max:255',
+            'description' => 'required',
+            'price' => 'required|numeric',
+        ]);
+
+
+        // Check if the product was found
+        if ($product) {
+            // Update the product with the validated data
+            $product->update($validatedData);
+
+            // Return the updated product as a JSON response with a 200 HTTP status code
+            return response()->json($product, 200);
+        } else {
+            // Return a 404 Not Found HTTP status code if the product was not found
+            return response()->json(['message' => 'Product not found'], 404);
+        }
     }
 
-    public function destroy($id)
+    /**
+    * Remove the specified resource from storage.
+    */
+    public function destroy(Product $product)
     {
-        $product = Product::find($id);
-        $product->delete();
-        return response()->json('Product deleted!');
+        // Check if the product was found
+        if ($product) {
+            // Delete the product
+            $product->delete();
+
+            // Return a 204 No Content HTTP status code
+            return response()->json(null, 204);
+        } else {
+            // Return a 404 Not Found HTTP status code if the product was not found
+            return response()->json(['message' => 'Product not found'], 404);
+        }
     }
 }

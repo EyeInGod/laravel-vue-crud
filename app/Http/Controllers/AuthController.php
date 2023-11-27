@@ -24,9 +24,10 @@ class AuthController extends Controller
             'email' => $request->email,
             'password' => bcrypt($request->password), // Hash the password
         ]);
+        $token = $user->createToken('authToken')->plainTextToken;
 
         // Return user data as JSON with a 201 (created) HTTP status code
-        return response()->json(['user' => $user], 201);
+        return response()->json(['user' => $user, 'token' => $token], 201);
     }
 
     // Function to handle user login
